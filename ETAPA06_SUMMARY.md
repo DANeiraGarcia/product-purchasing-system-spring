@@ -1,4 +1,4 @@
-# Resumen Etapa 06 - Configuración Hibernate/JPA/MySQL + Logging
+git # Resumen Etapa 06 - Configuración Hibernate/JPA/MySQL + Logging
 
 ## ✅ Completado - Fecha: 03 de febrero de 2026
 ## 🔄 Actualizado con Logging SLF4J - Fecha: 10 de febrero de 2026
