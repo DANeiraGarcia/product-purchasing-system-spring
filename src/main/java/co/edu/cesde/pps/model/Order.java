@@ -2,6 +2,7 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -44,6 +45,8 @@ import java.util.Objects;
  * - 1:N con OrderItem (items de la orden)
  * - 1:N con Payment (pagos asociados, puede haber reintentos)
  */
+@Entity
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -51,35 +54,65 @@ import java.util.Objects;
 @Builder
 public class Order {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long orderId;
+
+    @Column(name = "order_number", unique = true, nullable = false, length = 50)
     private String orderNumber;
-    private Long userId; // NOT NULL - checkout requiere usuario registrado
+
+    // 2. Relación con el Usuario (Obligatorio para Checkout)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    // 3. Relación con el Estado (Podría ser un Enum o una Entidad)
+    @Column(name = "status_id", nullable = false)
     private Long orderStatusId;
-    private Long shippingAddressId;
-    private Long billingAddressId;
+
+    // 4. Relaciones con Direcciones (Dos llaves foráneas a la misma tabla 'addresses')
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_address_id", nullable = false)
+    private Address shippingAddress;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "billing_address_id", nullable = false)
+    private Address billingAddress;
+
+    @Column(precision = 12, scale = 2, nullable = false)
     @Builder.Default
     private BigDecimal subtotal = BigDecimal.ZERO;
+
+    @Column(precision = 12, scale = 2, nullable = false)
     @Builder.Default
     private BigDecimal tax = BigDecimal.ZERO;
+
+    @Column(name = "shipping_cost", precision = 12, scale = 2, nullable = false)
     @Builder.Default
     private BigDecimal shippingCost = BigDecimal.ZERO;
+
+    @Column(precision = 12, scale = 2, nullable = false)
     @Builder.Default
     private BigDecimal total = BigDecimal.ZERO;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Colección para relación 1:N con OrderItem
+    // 5. Relación 1:N con los items de la orden
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
-    // constructor que pide OrderService
-    public Order(String orderNumber, Long userId, Long orderStatusId,
-                 Long shippingAddressId, Long billingAddressId) {
+    // Constructor manual (ajustado para usar objetos en lugar de solo IDs)
+    public Order(String orderNumber, User user, Long orderStatusId,
+                 Address shippingAddress, Address billingAddress) {
         this.orderNumber = orderNumber;
-        this.userId = userId;
+        this.user = user;
         this.orderStatusId = orderStatusId;
-        this.shippingAddressId = shippingAddressId;
-        this.billingAddressId = billingAddressId;
+        this.shippingAddress = shippingAddress;
+        this.billingAddress = billingAddress;
         this.subtotal = BigDecimal.ZERO;
         this.tax = BigDecimal.ZERO;
         this.shippingCost = BigDecimal.ZERO;
