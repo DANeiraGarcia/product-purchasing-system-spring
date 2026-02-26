@@ -1,8 +1,9 @@
 package co.edu.cesde.pps.model;
 
-
+import jakarta.persistence.*;
 import lombok.*;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,6 +19,8 @@ import java.util.Objects;
  * Relaciones (futuro - etapa02):
  * - 1:N con User (un rol puede tener múltiples usuarios)
  */
+@Entity
+@Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,9 +28,22 @@ import java.util.Objects;
 @Builder
 public class Role {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long roleId;
+
+    @Column(nullable = false, unique = true, length = 50) // 2. El nombre del rol no se repite
     private String name;
+
+    @Column(length = 255)
     private String description;
+
+    // 3. RELACIÓN 1:N con User (Inversa)
+    // Un rol (ej: 'ADMIN') puede pertenecer a muchos usuarios.
+    @OneToMany(mappedBy = "role")
+    @Builder.Default
+    private List<User> users = new ArrayList<>();
 
     // equals y hashCode basados en ID
 
