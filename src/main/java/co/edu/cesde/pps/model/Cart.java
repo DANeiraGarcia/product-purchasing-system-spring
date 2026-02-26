@@ -2,202 +2,71 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.enums.CartStatus;
 import co.edu.cesde.pps.util.CalculationUtils;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
- * Entidad Cart - Contenedor del carrito de compras.
+ * Entidad Cart - Carrito de compras.
  *
- * El carrito puede pertenecer a un usuario registrado o a un invitado (guest).
- * Siempre está asociado a una sesión mediante session.
+ * Maneja carritos tanto de usuarios registrados como de invitados (guests).
  *
  * Campos:
  * - cartId: Identificador único del carrito (PK)
- * - user: Usuario propietario (N:1 con User) - NULLABLE para carritos de invitado
- * - session: Sesión asociada (N:1 con UserSession) - siempre requerido
- * - status: Estado del carrito (OPEN, CONVERTED, ABANDONED)
+ * - user: Usuario dueño del carrito (N:1 con User) - NULLABLE para invitados
+ * - session: Sesión asociada al carrito (N:1 con UserSession)
+ * - status: Estado del carrito (OPEN, ABANDONED, CONVERTED)
  * - createdAt: Fecha de creación del carrito
  * - updatedAt: Fecha de última actualización
  * - items: Lista de items del carrito (1:N con CartItem)
  *
- * Comportamiento por tipo de usuario:
- * - Invitado: user = NULL, session = <UserSession>
- * - Registrado: user = <User>, session = <UserSession>
- *
  * Estados del carrito:
- * - OPEN: Carrito activo, usuario puede agregar/quitar items
- * - CONVERTED: Carrito convertido en orden (checkout completado)
- * - ABANDONED: Carrito abandonado o resultado de merge
- *
- * POLÍTICA DE CART MERGE (OBLIGATORIA):
- * =====================================
- * Cuando un usuario invitado se registra o inicia sesión y ya existe un carrito
- * abierto del usuario, se debe ejecutar el siguiente proceso de fusión (merge):
- *
- * Escenario:
- * - Carrito A: carrito del invitado (user = NULL, status = OPEN)
- * - Carrito B: carrito del usuario registrado (user = User, status = OPEN)
- *
- * Proceso de Merge (implementar en capa de servicio - etapa 05):
- * 1. Identificar ambos carritos por session y user
- * 2. Para cada CartItem del carrito invitado (A):
- *    a. Si el mismo product existe en carrito usuario (B):
- *       - Sumar las cantidades (quantity)
- *       - Resolver conflicto de unitPrice (conservar más reciente o del usuario según política)
- *    b. Si el product NO existe en carrito usuario (B):
- *       - Mover/copiar el CartItem al carrito del usuario (B)
- * 3. Marcar carrito invitado (A) como status = ABANDONED
- * 4. Usuario continúa con carrito único (B) sin pérdida de productos
- *
- * Resultado:
- * - El usuario mantiene un solo carrito activo
- * - No se pierden productos agregados como invitado
- * - No hay duplicación innecesaria de items
- *
- * Ver documentación completa en: documents_external/er_model_documentation.md - Sección 5
+ * - OPEN: Carrito activo en uso
+ * - ABANDONED: Carrito abandonado (inactivo > X días)
+ * - CONVERTED: Carrito convertido a orden (checkout completado)
  *
  * Relaciones:
- * - N:1 con User (opcional, nullable para invitados)
- * - N:1 con UserSession (obligatorio)
+ * - N:1 con User (opcional - muchos carritos pueden pertenecer a un usuario)
+ * - N:1 con UserSession (muchos carritos pertenecen a una sesión)
  * - 1:N con CartItem (un carrito tiene muchos items)
- *
- * NOTA: Los métodos de gestión bidireccional (addItem, removeItem) fueron movidos
- * a la capa de servicio (CartService) en etapa 05 para mantener el modelo limpio.
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Cart {
 
     private Long cartId;
     private User user; // Nullable - NULL para invitados
     private UserSession session;
-    private CartStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @Builder.Default
+    private CartStatus status = CartStatus.OPEN;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     // Colección para relación 1:N
-    private List<CartItem> items;
+    @Builder.Default
+    private List<CartItem> items = new ArrayList<>();
 
-    // Constructor vacío (requerido para JPA futuro)
-    public Cart() {
-        this.items = new ArrayList<>();
+    // Método helper para calcular total del carrito
+    public BigDecimal calculateTotal() {
+        return CalculationUtils.calculateCartTotal(items);
     }
 
-    // Constructor para carrito de invitado
-    public Cart(UserSession session) {
-        this.user = null; // Invitado
-        this.session = session;
-        this.status = CartStatus.OPEN;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.items = new ArrayList<>();
-    }
-
-    // Constructor para carrito de usuario registrado
-    public Cart(User user, UserSession session) {
-        this.user = user;
-        this.session = session;
-        this.status = CartStatus.OPEN;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.items = new ArrayList<>();
-    }
-
-    // Constructor completo (excepto ID y timestamps autogenerados)
-    public Cart(User user, UserSession session, CartStatus status) {
-        this.user = user;
-        this.session = session;
-        this.status = status != null ? status : CartStatus.OPEN;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.items = new ArrayList<>();
-    }
-
-    // Getters y Setters
-
-    public Long getCartId() {
-        return cartId;
-    }
-
-    public void setCartId(Long cartId) {
-        this.cartId = cartId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public UserSession getSession() {
-        return session;
-    }
-
-    public void setSession(UserSession session) {
-        this.session = session;
-    }
-
-    public CartStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(CartStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<CartItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<CartItem> items) {
-        this.items = items;
-    }
-
-    // Métodos helper de consulta (sin efectos secundarios)
-
-    /**
-     * Verifica si es carrito de invitado
-     */
-    public boolean isGuestCart() {
-        return user == null;
-    }
-
-    /**
-     * Verifica si el carrito está activo
-     */
+    // Método helper para verificar si el carrito está abierto
     public boolean isOpen() {
         return status == CartStatus.OPEN;
     }
 
-    /**
-     * Calcula el total del carrito sumando todos los items
-     * Delegado a CalculationUtils para centralizar lógica de cálculo
-     */
-    public BigDecimal calculateTotal() {
-        List<BigDecimal> subtotals = items.stream()
-                .map(CartItem::calculateSubtotal)
-                .collect(Collectors.toList());
-        return CalculationUtils.calculateCartTotal(subtotals);
+    public boolean isGuestCart() {
+        return this.user == null;
     }
 
     // equals y hashCode basados en ID
@@ -215,7 +84,7 @@ public class Cart {
         return Objects.hash(cartId);
     }
 
-    // toString sin navegación a objetos relacionados (solo IDs y tamaño de colección)
+    // toString personalizado sin navegación a objetos relacionados (solo IDs y tamaño de colección)
 
     @Override
     public String toString() {
@@ -224,12 +93,10 @@ public class Cart {
                 ", userId=" + (user != null ? user.getUserId() : null) +
                 ", sessionId=" + (session != null ? session.getSessionId() : null) +
                 ", status=" + status +
-                ", isGuest=" + isGuestCart() +
-                ", isOpen=" + isOpen() +
-                ", itemsCount=" + (items != null ? items.size() : 0) +
-                ", total=" + calculateTotal() +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", itemsCount=" + (items != null ? items.size() : 0) +
+                ", total=" + calculateTotal() +
                 '}';
     }
 }

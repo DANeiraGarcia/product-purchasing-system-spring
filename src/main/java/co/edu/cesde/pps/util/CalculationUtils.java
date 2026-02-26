@@ -1,5 +1,7 @@
 package co.edu.cesde.pps.util;
 
+import co.edu.cesde.pps.model.CartItem;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -56,14 +58,15 @@ public final class CalculationUtils {
      * @param itemSubtotals Lista de subtotales de los items
      * @return Total del carrito
      */
-    public static BigDecimal calculateCartTotal(List<BigDecimal> itemSubtotals) {
+    public static BigDecimal calculateCartTotal(List<CartItem> itemSubtotals) {
         if (itemSubtotals == null || itemSubtotals.isEmpty()) {
             return BigDecimal.ZERO;
         }
 
         return itemSubtotals.stream()
-            .map(MoneyUtils::normalize)
-            .reduce(BigDecimal.ZERO, MoneyUtils::add);
+                .map(CartItem::calculateSubtotal) // 1. Extraemos el BigDecimal del objeto
+                .map(MoneyUtils::normalize)      // 2. Ahora sí normalizamos el número
+                .reduce(BigDecimal.ZERO, MoneyUtils::add);
     }
 
     /**
