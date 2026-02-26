@@ -1,8 +1,11 @@
 package co.edu.cesde.pps.model;
-
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
+import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * Entidad PaymentStatus - Catálogo de estados posibles de un pago.
@@ -16,6 +19,8 @@ import java.util.Objects;
  * Relaciones (futuro - etapa02):
  * - 1:N con Payment (un estado puede aplicar a múltiples pagos)
  */
+@Entity
+@Table(name = "payment_statuses") // Usamos el plural para la tabla
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,8 +28,21 @@ import java.util.Objects;
 @Builder
 public class PaymentStatus {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id") // Mantenemos el estándar de nombre 'id'
     private Long paymentStatusId;
+
+    @Column(name = "name", nullable = false, unique = true, length = 50)
     private String name;
+
+    @Column(name = "description", length = 255)
+    private String description;
+
+    // 2. RELACIÓN 1:N con Payment (Inversa)
+    @OneToMany(mappedBy = "paymentStatus")
+    @Builder.Default
+    private List<Payment> payments = new ArrayList<>();
 
     // equals y hashCode basados en ID
 
