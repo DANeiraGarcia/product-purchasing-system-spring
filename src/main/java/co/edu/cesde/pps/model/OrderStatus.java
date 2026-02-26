@@ -1,6 +1,9 @@
 package co.edu.cesde.pps.model;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,6 +34,12 @@ public class OrderStatus {
     private String name;
     @Column (name= "description", length = 255)
     private String description;
+
+    // 1. RELACIÓN 1:N con Order
+    // Un estado (ej: 'PENDING') puede estar en muchas órdenes.
+    @OneToMany(mappedBy = "orderStatus")
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
 
 
 

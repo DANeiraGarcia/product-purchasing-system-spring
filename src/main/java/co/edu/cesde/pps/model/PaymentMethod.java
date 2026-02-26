@@ -1,6 +1,9 @@
 package co.edu.cesde.pps.model;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,6 +18,8 @@ import java.util.Objects;
  * Relaciones (futuro - etapa02):
  * - 1:N con Payment (un método puede usarse en múltiples pagos)
  */
+@Entity
+@Table(name = "payment_methods")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,8 +27,26 @@ import java.util.Objects;
 @Builder
 public class PaymentMethod {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long paymentMethodId;
+
+    @Column(name = "name", nullable = false, unique = true, length = 50)
     private String name;
+
+    @Column(name = "description", length = 255)
+    private String description;
+
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
+
+    // 2. RELACIÓN 1:N con Payment
+    // Un método (ej: 'CREDIT_CARD') puede aparecer en miles de registros de pagos.
+    @OneToMany(mappedBy = "paymentMethod")
+    @Builder.Default
+    private List<Payment> payments = new ArrayList<>();
 
     // equals y hashCode basados en ID
 
