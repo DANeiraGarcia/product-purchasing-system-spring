@@ -1,6 +1,7 @@
 package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.util.ValidationUtils;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -31,6 +32,8 @@ import java.util.Objects;
  * - 1:N con CartItem (un producto puede estar en múltiples carritos)
  * - 1:N con OrderItem (un producto puede estar en múltiples órdenes)
  */
+@Entity // 2. Marcar como entidad
+@Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,15 +41,36 @@ import java.util.Objects;
 @Builder
 public class Product {
 
+    @Id // 3. Llave primaria
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long productId;
+
+    // 4. Relación N:1 con Category
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @Column(unique = true, nullable = false, length = 50) // 5. SKU único para inventario
     private String sku;
+
+    @Column(nullable = false, length = 150)
     private String name;
+
+    @Column(columnDefinition = "TEXT") // 6. Para descripciones largas
     private String description;
+
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
+
+    @Column(name = "stock_qty", nullable = false)
     private Integer stockQty;
+
+    @Column(name = "is_active")
     @Builder.Default
     private Boolean isActive = true;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
