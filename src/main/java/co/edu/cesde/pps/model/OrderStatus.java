@@ -25,12 +25,14 @@ import java.util.Objects;
 public class OrderStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "order_status_id")
+    @Column(name= "id")
     private Long orderStatusId;
     @Column(name= "name", nullable = false, unique = true, length = 50)
     private String name;
     @Column (name= "description", length = 255)
     private String description;
+
+
 
 
     @Override
