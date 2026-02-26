@@ -3,6 +3,7 @@ package co.edu.cesde.pps.model;
 import co.edu.cesde.pps.enums.CartStatus;
 import co.edu.cesde.pps.util.CalculationUtils;
 import lombok.*;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,6 +35,8 @@ import java.util.Objects;
  * - N:1 con UserSession (muchos carritos pertenecen a una sesión)
  * - 1:N con CartItem (un carrito tiene muchos items)
  */
+@Entity // 2. Marcar como entidad
+@Table(name = "carts")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -41,17 +44,31 @@ import java.util.Objects;
 @Builder
 public class Cart {
 
+    @Id // 4. Llave primaria
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long cartId;
+    @ManyToOne(fetch = FetchType.LAZY) // 5. Relación N:1 con User
+    @JoinColumn(name = "user_id", nullable = true)
     private User user; // Nullable - NULL para invitados
+    @ManyToOne(fetch = FetchType.LAZY) // 6. Relación N:1 con la sesión
+    @JoinColumn(name = "session_id", nullable = false)
     private UserSession session;
+
+    @Enumerated(EnumType.STRING) // 7. Guardar el estado como texto (OPEN, ABANDONED...)
+    @Column(nullable = false
     @Builder.Default
     private CartStatus status = CartStatus.OPEN;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "updated_at")
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     // Colección para relación 1:N
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 

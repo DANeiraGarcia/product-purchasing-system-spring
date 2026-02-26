@@ -61,7 +61,7 @@ public class User {
     private String lastName;
     private String phone;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) // <--- 6. ENUM PARA STATUS
     @Builder.Default
     private UserStatus status = UserStatus.ACTIVE;
     @Column(name = "created_at")
