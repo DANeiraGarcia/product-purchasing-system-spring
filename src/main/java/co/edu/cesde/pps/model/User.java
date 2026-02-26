@@ -53,7 +53,7 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY) // <--- 5. RELACIÓN CON ROLE
     @JoinColumn(name = "role_id")
     private Role role;
-    @Column(unique = true, nullable = false
+    @Column(unique = true, nullable = false)
     private String email;
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
