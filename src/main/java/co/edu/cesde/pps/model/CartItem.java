@@ -2,6 +2,7 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -34,6 +35,10 @@ import java.util.Objects;
  * - N:1 con Cart (muchos items pertenecen a un carrito)
  * - N:1 con Product (muchos items referencian a un producto)
  */
+@Entity // 2. Marcar como entidad
+@Table(name = "cart_items", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"cart_id", "product_id"}) // 3. Restricción UNIQUE
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -41,11 +46,22 @@ import java.util.Objects;
 @Builder
 public class CartItem {
 
+    @Id // 4. Llave primaria
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long cartItemId;
+    @ManyToOne(fetch = FetchType.LAZY) // 5. Relación N:1 con Cart
+    @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
+    @ManyToOne(fetch = FetchType.LAZY) // 6. Relación N:1 con Product
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @Column(nullable = false)
     private Integer quantity;
+    @Column(name = "unit_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPrice;
+    @Column(name = "added_at", nullable = false, updatable = false)
     private LocalDateTime addedAt;
 
     public CartItem(Cart cart, Product product, Integer quantity, BigDecimal unitPrice) {
