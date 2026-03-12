@@ -4,6 +4,7 @@ import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -52,6 +53,7 @@ public class CartItem {
     private Long cartItemId;
     @ManyToOne(fetch = FetchType.LAZY) // 5. Relación N:1 con Cart
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonBackReference("cart-items")
     private Cart cart;
     @ManyToOne(fetch = FetchType.LAZY) // 6. Relación N:1 con Product
     @JoinColumn(name = "product_id", nullable = false)

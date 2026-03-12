@@ -4,6 +4,7 @@ import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -57,6 +58,7 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY) // 3. Relación N:1 con Order
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference("order-items")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY) // 4. Relación N:1 con Product

@@ -4,6 +4,7 @@ import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -102,6 +103,7 @@ public class Order {
 
     // 5. Relación 1:N con los items de la orden
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("order-items")
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 

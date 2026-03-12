@@ -4,6 +4,7 @@ import co.edu.cesde.pps.enums.CartStatus;
 import co.edu.cesde.pps.util.CalculationUtils;
 import lombok.*;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -56,7 +57,7 @@ public class Cart {
     private UserSession session;
 
     @Enumerated(EnumType.STRING) // 7. Guardar el estado como texto (OPEN, ABANDONED...)
-    @Column(nullable = false
+    @Column(nullable = false)
     @Builder.Default
     private CartStatus status = CartStatus.OPEN;
 
@@ -69,6 +70,7 @@ public class Cart {
 
     // Colección para relación 1:N
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("cart-items")
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 

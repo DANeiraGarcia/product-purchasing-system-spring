@@ -6,6 +6,7 @@ import co.edu.cesde.pps.model.User;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "addresses")
@@ -24,6 +25,7 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY) // Muchos direcciones -> Un usuario
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference("user-addresses")
     private User user;
 
     @Enumerated(EnumType.STRING) // Importante para que el Enum se guarde como texto (HOME, WORK, etc.)
@@ -92,6 +94,8 @@ public class Address {
 
 
     // toString sin navegación a objetos relacionados (solo IDs)
+
+
 
 
 
