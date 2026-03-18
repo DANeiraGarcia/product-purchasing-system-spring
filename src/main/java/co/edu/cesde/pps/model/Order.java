@@ -69,8 +69,9 @@ public class Order {
     private User user;
 
     // 3. Relación con el Estado (Podría ser un Enum o una Entidad)
-    @Column(name = "status_id", nullable = false)
-    private Long orderStatusId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_status_id", nullable = false)
+    private OrderStatus orderStatus;;
 
     // 4. Relaciones con Direcciones (Dos llaves foráneas a la misma tabla 'addresses')
     @ManyToOne(fetch = FetchType.LAZY)
@@ -102,17 +103,17 @@ public class Order {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // 5. Relación 1:N con los items de la orden
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     @JsonManagedReference("order-items")
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
     // Constructor manual (ajustado para usar objetos en lugar de solo IDs)
-    public Order(String orderNumber, User user, Long orderStatusId,
+    public Order(String orderNumber, User user, OrderStatus orderStatus,
                  Address shippingAddress, Address billingAddress) {
         this.orderNumber = orderNumber;
         this.user = user;
-        this.orderStatusId = orderStatusId;
+        this.orderStatus = orderStatus;
         this.shippingAddress = shippingAddress;
         this.billingAddress = billingAddress;
         this.subtotal = BigDecimal.ZERO;
@@ -172,10 +173,10 @@ public class Order {
         return "Order{" +
                 "orderId=" + orderId +
                 ", orderNumber='" + orderNumber + '\'' +
-                ", userId=" + userId +
-                ", orderStatusId=" + orderStatusId +
-                ", shippingAddressId=" + shippingAddressId +
-                ", billingAddressId=" + billingAddressId +
+                ", userId=" + (user != null ? user.getUserId() : null) +
+                ", orderStatusId=" + (orderStatus != null ? orderStatus.getOrderStatusId() : null) +
+                ", shippingAddressId=" + (shippingAddress != null ? shippingAddress.getAddressId() : null) +
+                ", billingAddressId=" + (billingAddress != null ? billingAddress.getAddressId() : null) +
                 ", subtotal=" + subtotal +
                 ", tax=" + tax +
                 ", shippingCost=" + shippingCost +

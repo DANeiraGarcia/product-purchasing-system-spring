@@ -52,12 +52,12 @@ public class Category {
     private String slug;
 
     // Colecciones para relaciones 1:N
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     @JsonManagedReference("category-parent")
     @Builder.Default
     private List<Category> subcategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
     @Builder.Default
     private List<Product> products = new ArrayList<>();
 

@@ -89,7 +89,7 @@ public class OrderService {
     public OrderDTO checkout(Long userId, Long cartId, Long shippingAddressId,
                             Long billingAddressId) {
         // 1. Validar usuario está registrado
-        userService.findUserEntityOrThrow(userId);
+        User user = userService.findUserEntityOrThrow(userId);
 
         // 2. Obtener y validar carrito
         Cart cart = cartService.findCartEntityOrThrow(cartId);
@@ -141,8 +141,11 @@ public class OrderService {
 
         // 5. Crear orden con número único
         String orderNumber = generateOrderNumber();
-        Order order = new Order(orderNumber, userId, 1L, // TODO: orderStatusId = PENDING
-            shippingAddressId, billingAddressId);
+        OrderStatus pendingStatus = new OrderStatus();
+        pendingStatus.setOrderStatusId(1L); // PENDING
+
+        Order order = new Order(orderNumber, user, pendingStatus,
+                shippingAddress, billingAddress);
         order.setOrderId(generateNextId());
 
         // 6. Copiar items del carrito a la orden (congelar precios históricos)
@@ -237,7 +240,7 @@ public class OrderService {
 
         // TODO Etapa 06: List<Order> orders = orderRepository.findByUserId(userId);
         List<Order> userOrders = ordersInMemory.stream()
-                .filter(o -> o.getUserId().equals(userId))
+                .filter(o -> o.getUser().getUserId().equals(userId))
                 .collect(Collectors.toList());
 
         return orderMapper.toDTOList(userOrders);
@@ -252,7 +255,7 @@ public class OrderService {
     public List<OrderDTO> findOrdersByStatus(Long statusId) {
         // TODO Etapa 06: List<Order> orders = orderRepository.findByOrderStatusId(statusId);
         List<Order> statusOrders = ordersInMemory.stream()
-                .filter(o -> o.getOrderStatusId().equals(statusId))
+                .filter(o -> o.getOrderStatus().getOrderStatusId().equals(statusId))
                 .collect(Collectors.toList());
 
         return orderMapper.toDTOList(statusOrders);

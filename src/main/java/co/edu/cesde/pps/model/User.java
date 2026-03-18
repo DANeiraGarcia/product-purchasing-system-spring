@@ -52,7 +52,7 @@ public class User {
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY) // <--- 5. RELACIÓN CON ROLE
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id",nullable = false)
     private Role role;
     @Column(unique = true, nullable = false)
     private String email;
@@ -70,7 +70,7 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // Colecciones para relaciones 1:N
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference("user-addresses")
     @Builder.Default
     private List<Address> addresses = new ArrayList<>();

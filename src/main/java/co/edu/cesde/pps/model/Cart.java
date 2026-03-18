@@ -50,10 +50,10 @@ public class Cart {
     @Column(name = "id")
     private Long cartId;
     @ManyToOne(fetch = FetchType.LAZY) // 5. Relación N:1 con User
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id") // Nullable por ser opcional para invitados
     private User user; // Nullable - NULL para invitados
     @ManyToOne(fetch = FetchType.LAZY) // 6. Relación N:1 con la sesión
-    @JoinColumn(name = "session_id", nullable = false)
+    @JoinColumn(name = "session_id")
     private UserSession session;
 
     @Enumerated(EnumType.STRING) // 7. Guardar el estado como texto (OPEN, ABANDONED...)
@@ -69,7 +69,7 @@ public class Cart {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     // Colección para relación 1:N
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY)
     @JsonManagedReference("cart-items")
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();

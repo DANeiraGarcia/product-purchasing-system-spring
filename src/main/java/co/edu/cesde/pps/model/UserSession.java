@@ -41,7 +41,7 @@ public class UserSession {
 
     // 2. Relación con User (Nullable para soportar invitados)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "session_token", unique = true, nullable = false, length = 255)
