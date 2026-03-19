@@ -48,7 +48,7 @@ mysql -u root -p pps_db < src/main/resources/sql/data.sql
 
 Copiar el archivo de ejemplo y ajustar valores:
 ```bash
-cp .env.example .env
+cp ..env.example ..env
 ```
 
 Editar `.env` con tus credenciales:
@@ -89,8 +89,8 @@ export DB_PASSWORD=tu_password
 Crear archivo `run.sh`:
 ```bash
 #!/bin/bash
-source .env
-export $(cat .env | xargs)
+source ..env
+export $(cat ..env | xargs)
 mvn clean compile exec:java
 ```
 

@@ -2,8 +2,8 @@ spring:
   application:
     name: product-purchasing-system
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:pps_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: ${DB_USER:user_pps}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:purchasing_system_spring}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
     password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:

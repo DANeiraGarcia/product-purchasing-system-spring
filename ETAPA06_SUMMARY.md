@@ -116,13 +116,13 @@ LOG_LEVEL=DEBUG
 **Uso**:
 ```bash
 # Copiar template
-cp .env.example .env
+cp ..env.example ..env
 
 # Editar con credenciales reales
-nano .env
+nano ..env
 
 # Cargar en IDE o terminal
-export $(cat .env | xargs)
+export $(cat ..env | xargs)
 ```
 
 ---
@@ -318,8 +318,8 @@ hibernate.format_sql=false  # Sin formateo
 
 - [ ] **Archivo .env configurado**
   ```bash
-  cp .env.example .env
-  nano .env  # Ajustar credenciales
+  cp ..env.example ..env
+  nano ..env  # Ajustar credenciales
   ```
 
 - [ ] **Dependencias Maven descargadas**
@@ -418,9 +418,9 @@ Esta etapa es **SOLO configuración base**, por lo tanto NO incluye (aún):
 export DB_HOST=localhost
 export DB_USER=root
 
-# O desde .env
-source .env
-export $(cat .env | xargs)
+# O desde ..env
+source ..env
+export $(cat ..env | xargs)
 ```
 
 ### 2. Hibernate Lee persistence.xml

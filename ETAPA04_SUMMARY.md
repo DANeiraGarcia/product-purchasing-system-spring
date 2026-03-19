@@ -398,16 +398,16 @@ DEFAULT_IDLE_TIMEOUT = 300000 // 5 minutos
 #### Métodos principales:
 
 ```java
-getDbHost()          // Host desde env o default
-getDbPort()          // Puerto desde env o default
-getDbName()          // Nombre BD desde env o default
-getDbUser()          // Usuario desde env o default
-getDbPassword()      // Contraseña desde env o default
+getDbHost()          // Host desde .env o default
+getDbPort()          // Puerto desde .env o default
+getDbName()          // Nombre BD desde .env o default
+getDbUser()          // Usuario desde .env o default
+getDbPassword()      // Contraseña desde .env o default
 getJdbcUrl()         // URL JDBC completa construida
 getHibernateDialect() // Dialecto de Hibernate para MySQL8
 getHibernateDdlAuto() // Estrategia DDL (none en producción)
 isShowSql()          // false en producción, true en dev
-getPoolSize()        // Tamaño del pool desde env o default
+getPoolSize()        // Tamaño del pool desde .env o default
 getDriverClassName() // "com.mysql.cj.jdbc.Driver"
 getConfigSummary()   // String con resumen de configuración
 ```
