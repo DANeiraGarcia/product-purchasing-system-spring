@@ -6,9 +6,13 @@ import co.edu.cesde.pps.exception.EntityNotFoundException;
 import co.edu.cesde.pps.mapper.UserMapper;
 import co.edu.cesde.pps.model.Role;
 import co.edu.cesde.pps.model.User;
+import co.edu.cesde.pps.repository.RoleRepository;
+import co.edu.cesde.pps.repository.UserRepository;
 import co.edu.cesde.pps.util.ValidationUtils;
 import co.edu.cesde.pps.config.AppConfig;
 import co.edu.cesde.pps.enums.UserStatus;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,16 +33,18 @@ import java.util.List;
  * - Inyección de UserRepository
  * - Persistencia real
  */
+@Service
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserMapper userMapper;
-    // TODO Etapa 06: private final UserRepository userRepository;
-    // Por ahora trabajamos con lista en memoria
-    private final List<User> usersInMemory;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public UserService() {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userMapper = new UserMapper();
-        this.usersInMemory = new ArrayList<>();
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -52,9 +58,9 @@ public class UserService {
      * @return UserDTO del usuario creado
      * @throws DuplicateEntityException si el email ya existe
      */
+    @Transactional
     public UserDTO registerUser(String email, String passwordHash, String firstName,
                                 String lastName, String phone) {
-        // Validaciones
         ValidationUtils.validateEmail(email, "email");
         ValidationUtils.validateNotBlank(passwordHash, "passwordHash");
         ValidationUtils.validateMinLength(passwordHash, AppConfig.getMinPasswordLength(), "password");
@@ -65,19 +71,14 @@ public class UserService {
             ValidationUtils.validatePhone(phone, "phone");
         }
 
-        // Verificar email duplicado
         if (existsByEmail(email)) {
             throw new DuplicateEntityException("User", "email", email);
         }
 
-        // Crear usuario
-        // TODO Etapa 06: cargar Role desde BD
-        Role defaultRole = new Role();
-        defaultRole.setRoleId(2L); // CUSTOMER
-        defaultRole.setName("CUSTOMER");
+        Role defaultRole = roleRepository.findByNameIgnoreCase("CUSTOMER")
+                .orElseThrow(() -> new EntityNotFoundException("Role", "CUSTOMER"));
 
         User user = User.builder()
-                .userId(generateNextId())
                 .role(defaultRole)
                 .email(email.toLowerCase().trim())
                 .passwordHash(passwordHash)
@@ -88,8 +89,7 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        // TODO Etapa 06: userRepository.save(user);
-        usersInMemory.add(user);
+        user = userRepository.save(user);
 
         return userMapper.toDTO(user);
     }
@@ -114,10 +114,7 @@ public class UserService {
      * @throws EntityNotFoundException si no existe
      */
     public UserDTO findByEmail(String email) {
-        // TODO Etapa 06: User user = userRepository.findByEmail(email)
-        User user = usersInMemory.stream()
-                .filter(u -> u.getEmail().equalsIgnoreCase(email))
-                .findFirst()
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new EntityNotFoundException("User with email: " + email));
 
         return userMapper.toDTO(user);
@@ -129,8 +126,7 @@ public class UserService {
      * @return Lista de UserDTO
      */
     public List<UserDTO> findAllUsers() {
-        // TODO Etapa 06: List<User> users = userRepository.findAll();
-        return userMapper.toDTOList(usersInMemory);
+        return userMapper.toDTOList(userRepository.findAll());
     }
 
     /**
@@ -183,32 +179,15 @@ public class UserService {
         // TODO Etapa 06: userRepository.save(user);
     }
 
-    /**
-     * Verifica si existe un usuario con el email dado.
-     *
-     * @param email Email a verificar
-     * @return true si existe
-     */
+
     public boolean existsByEmail(String email) {
-        // TODO Etapa 06: return userRepository.existsByEmail(email);
-        return usersInMemory.stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
+        return userRepository.existsByEmailIgnoreCase(email);
     }
 
-    /**
-     * Busca entity User por ID o lanza excepción.
-     * Método interno para uso de otros servicios.
-     *
-     * @param userId ID del usuario
-     * @return User entity
-     * @throws EntityNotFoundException si no existe
-     */
+
+
     public User findUserEntityOrThrow(Long userId) {
-        // TODO Etapa 06: return userRepository.findById(userId)
-        //     .orElseThrow(() -> new EntityNotFoundException("User", userId));
-        return usersInMemory.stream()
-                .filter(u -> u.getUserId().equals(userId))
-                .findFirst()
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User", userId));
     }
 
