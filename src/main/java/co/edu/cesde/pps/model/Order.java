@@ -103,11 +103,10 @@ public class Order {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // 5. Relación 1:N con los items de la orden
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("order-items")
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
-
     // Constructor manual (ajustado para usar objetos en lugar de solo IDs)
     public Order(String orderNumber, User user, OrderStatus orderStatus,
                  Address shippingAddress, Address billingAddress) {
