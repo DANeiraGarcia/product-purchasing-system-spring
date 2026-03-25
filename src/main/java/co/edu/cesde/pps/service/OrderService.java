@@ -12,7 +12,7 @@ import co.edu.cesde.pps.repository.OrderRepository;
 import co.edu.cesde.pps.repository.OrderStatusRepository;
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.config.AppConfig;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -305,19 +305,7 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Order", orderId));
     }
 
-    // Métodos auxiliares para simular auto-increment
-    private Long generateNextId() {
-        return ordersInMemory.stream()
-                .mapToLong(Order::getOrderId)
-                .max()
-                .orElse(0L) + 1;
-    }
 
-    private Long generateNextOrderItemId() {
-        return ordersInMemory.stream()
-                .flatMap(order -> order.getItems().stream())
-                .mapToLong(OrderItem::getOrderItemId)
-                .max()
-                .orElse(0L) + 1;
-    }
+
+
 }

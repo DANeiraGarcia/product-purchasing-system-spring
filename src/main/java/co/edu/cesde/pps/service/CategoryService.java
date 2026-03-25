@@ -9,7 +9,7 @@ import co.edu.cesde.pps.model.Category;
 import co.edu.cesde.pps.repository.CategoryRepository;
 import co.edu.cesde.pps.util.StringUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -115,8 +115,7 @@ public class CategoryService {
             throw new ValidationException("Cannot delete category with products");
         }
 
-        // TODO Etapa 06: categoryRepository.delete(category);
-        categoriesInMemory.remove(category);
+
     }
 
 
@@ -168,7 +167,6 @@ public class CategoryService {
 
         // Crear subcategoría
         Category subcategory = categoryMapper.toEntity(subcategoryDTO);
-        subcategory.setCategoryId(generateNextId());
         subcategory.setSlug(slug);
 
         // Gestión bidireccional
@@ -176,19 +174,12 @@ public class CategoryService {
         subcategory.setParent(parent);                // Establecer referencia
 
         // TODO Etapa 06: categoryRepository.save(subcategory);
-        categoriesInMemory.add(subcategory);
+
 
         return categoryMapper.toDTO(subcategory);
     }
 
-    /**
-     * Remueve una subcategoría de su padre (gestión bidireccional).
-     *
-     * @param parentId ID de la categoría padre
-     * @param subcategoryId ID de la subcategoría
-     * @throws EntityNotFoundException si no existen
-     * @throws ValidationException si la subcategoría no pertenece al padre
-     */
+
     public void removeSubcategory(Long parentId, Long subcategoryId) {
         Category parent = findCategoryEntityOrThrow(parentId);
         Category subcategory = findCategoryEntityOrThrow(subcategoryId);
@@ -203,16 +194,10 @@ public class CategoryService {
         parent.getSubcategories().remove(subcategory);  // Remover de colección
         subcategory.setParent(null);                     // Remover referencia (convertir en raíz)
 
-        // TODO Etapa 06: categoryRepository.save(subcategory);
+
     }
 
-    /**
-     * Construye árbol de categorías completo desde una categoría raíz.
-     *
-     * @param categoryId ID de la categoría raíz
-     * @return CategoryDTO con subcategorías anidadas
-     * @throws EntityNotFoundException si no existe
-     */
+
     public CategoryDTO buildCategoryTree(Long categoryId) {
         Category category = findCategoryEntityOrThrow(categoryId);
         return categoryMapper.toDTOWithHierarchy(category);
@@ -224,31 +209,16 @@ public class CategoryService {
      * @return Lista de CategoryDTO con jerarquías completas
      */
     public List<CategoryDTO> buildFullCategoryTree() {
-        List<Category> rootCategories = categoriesInMemory.stream()
-                .filter(Category::isRootCategory)
-                .collect(Collectors.toList());
-
+        List<Category> rootCategories = categoryRepository.findByParentIsNull();
         return categoryMapper.toDTOListWithHierarchy(rootCategories);
     }
 
-    /**
-     * Verifica si existe una categoría con el slug dado.
-     *
-     * @param slug Slug a verificar
-     * @return true si existe
-     */
+
     public boolean existsBySlug(String slug) {
         return categoryRepository.existsBySlugIgnoreCase(slug);
     }
 
-    /**
-     * Busca entity Category por ID o lanza excepción.
-     * Método interno para uso de otros servicios.
-     *
-     * @param categoryId ID de la categoría
-     * @return Category entity
-     * @throws EntityNotFoundException si no existe
-     */
+
     public Category findCategoryEntityOrThrow(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Category", categoryId));
@@ -256,9 +226,7 @@ public class CategoryService {
 
     // Métodos privados auxiliares
 
-    /**
-     * Verifica si asignar newParent a category crearía un ciclo.
-     */
+
     private boolean wouldCreateCycle(Category category, Category newParent) {
         Category current = newParent;
         while (current != null) {
@@ -270,11 +238,4 @@ public class CategoryService {
         return false;
     }
 
-    // Método auxiliar para simular auto-increment
-    private Long generateNextId() {
-        return categoriesInMemory.stream()
-                .mapToLong(Category::getCategoryId)
-                .max()
-                .orElse(0L) + 1;
-    }
 }

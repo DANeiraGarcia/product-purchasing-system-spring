@@ -16,7 +16,7 @@ import co.edu.cesde.pps.repository.CartRepository;
 import co.edu.cesde.pps.repository.UserSessionRepository;
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -446,18 +446,7 @@ public class CartService {
     }
 
     // Métodos auxiliares para simular auto-increment
-    private Long generateNextId() {
-        return cartsInMemory.stream()
-                .mapToLong(Cart::getCartId)
-                .max()
-                .orElse(0L) + 1;
-    }
 
-    private Long generateNextCartItemId() {
-        return cartsInMemory.stream()
-                .flatMap(cart -> cart.getItems().stream())
-                .mapToLong(CartItem::getCartItemId)
-                .max()
-                .orElse(0L) + 1;
-    }
+
+
 }

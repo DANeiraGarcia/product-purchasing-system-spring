@@ -10,7 +10,7 @@ import co.edu.cesde.pps.model.Product;
 import co.edu.cesde.pps.repository.ProductRepository;
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -251,11 +251,5 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product", productId));
     }
 
-    // Método auxiliar para simular auto-increment
-    private Long generateNextId() {
-        return productsInMemory.stream()
-                .mapToLong(Product::getProductId)
-                .max()
-                .orElse(0L) + 1;
-    }
+
 }

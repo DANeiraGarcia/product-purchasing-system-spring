@@ -9,7 +9,7 @@ import co.edu.cesde.pps.model.User;
 import co.edu.cesde.pps.repository.AddressRepository;
 import co.edu.cesde.pps.util.ValidationUtils;
 import co.edu.cesde.pps.config.AppConfig;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -186,11 +186,5 @@ public class AddressService {
         addresses.forEach(a -> a.setIsDefault(false));
     }
 
-    // Método auxiliar para simular auto-increment en memoria
-    private Long generateNextId() {
-        return addressesInMemory.stream()
-                .mapToLong(Address::getAddressId)
-                .max()
-                .orElse(0L) + 1;
-    }
+
 }

@@ -11,7 +11,7 @@ import co.edu.cesde.pps.repository.UserRepository;
 import co.edu.cesde.pps.util.ValidationUtils;
 import co.edu.cesde.pps.config.AppConfig;
 import co.edu.cesde.pps.enums.UserStatus;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -191,11 +191,5 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User", userId));
     }
 
-    // Método auxiliar para simular auto-increment en memoria
-    private Long generateNextId() {
-        return usersInMemory.stream()
-                .mapToLong(User::getUserId)
-                .max()
-                .orElse(0L) + 1;
-    }
+
 }
