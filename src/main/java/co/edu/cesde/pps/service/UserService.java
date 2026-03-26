@@ -45,7 +45,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
+    // AQUI INYECCION POR DEPENDENCIA
     public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userMapper = new UserMapper();
         this.userRepository = userRepository;
@@ -53,7 +53,7 @@ public class UserService {
     }
 
 
-    //metodo de escritura
+    //METODO NIVEL ESCRITURA @transactional
     @Transactional
     public UserDTO registerUser(String email, String passwordHash, String firstName,
                                 String lastName, String phone) {
@@ -70,7 +70,8 @@ public class UserService {
         if (existsByEmail(email)) {
             throw new DuplicateEntityException("User", "email", email);
         }
-
+        // CREAR USUARIO
+        //ACA EL ROL DEBE EXISTIR EN LA BASE DE DATOS Y SE BUSCA IGNORANDO MAYUCULAS/minusculas
         Role defaultRole = roleRepository.findByNameIgnoreCase("CUSTOMER")
                 .orElseThrow(() -> new EntityNotFoundException("Role", "CUSTOMER"));
 
@@ -85,9 +86,9 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        user = userRepository.save(user);
+        user = userRepository.save(user); //ACA MANDA LA PERSISTENCIA A LA BASE DE DATOS.(guarda en base de datos)
 
-        return userMapper.toDTO(user);
+        return userMapper.toDTO(user); // se retorna DTO para no exponer el password
     }
 
 
@@ -97,6 +98,7 @@ public class UserService {
     }
 
     // los find de consulta no llevan @transactional
+    // siempre que se devuelva un modelo en un servicio debe llevar DTO
     public UserDTO findByEmail(String email) {
         User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new EntityNotFoundException("User with email: " + email));
@@ -150,7 +152,7 @@ public class UserService {
     }
 
 
-
+    // aca si devuelve el user (modelo) porque solo esta verificando errores
     public User findUserEntityOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User", userId));
