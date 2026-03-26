@@ -11,10 +11,8 @@ import co.edu.cesde.pps.util.StringUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 /**
  * Servicio para gestión de categorías.

@@ -8,10 +8,7 @@ import co.edu.cesde.pps.exception.InsufficientStockException;
 import co.edu.cesde.pps.exception.InvalidCartStateException;
 import co.edu.cesde.pps.exception.ValidationException;
 import co.edu.cesde.pps.mapper.CartMapper;
-import co.edu.cesde.pps.model.Cart;
-import co.edu.cesde.pps.model.CartItem;
-import co.edu.cesde.pps.model.Product;
-import co.edu.cesde.pps.model.User;
+import co.edu.cesde.pps.model.*;
 import co.edu.cesde.pps.repository.CartRepository;
 import co.edu.cesde.pps.repository.UserSessionRepository;
 import co.edu.cesde.pps.util.CalculationUtils;
@@ -445,7 +442,10 @@ public class CartService {
         cart.setUpdatedAt(LocalDateTime.now());
     }
 
-    // Métodos auxiliares para simular auto-increment
+    private UserSession resolveSession(Long sessionId) {
+        return userSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException("UserSession", sessionId));
+    }
 
 
 

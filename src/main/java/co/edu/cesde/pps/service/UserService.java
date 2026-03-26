@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,8 +32,14 @@ import java.util.List;
  * - Inyección de UserRepository
  * - Persistencia real
  */
+
+// el controlador recibe la consulta del front y lo envia al service y el service valida
+// el servicio valida la informacion y manda la informacion al frontend
+    // @service, springboot identifica que la clase es un servicio.
+    //@Transactional, dice que actividades van a hacer operaciones
+// para que identificar el servicio a nivel de clase (unen la logica de la interface) y hace el puente el controllador(endpoint)
 @Service
-@Transactional(readOnly = true)
+@Transactional(readOnly = true) // read only: no ejecuta las acciones desde la clase sino desde los metodos
 public class UserService {
 
     private final UserMapper userMapper;
@@ -47,17 +52,8 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    /**
-     * Registra un nuevo usuario.
-     *
-     * @param email Email del usuario
-     * @param passwordHash Hash de la contraseña
-     * @param firstName Nombre
-     * @param lastName Apellido
-     * @param phone Teléfono (opcional)
-     * @return UserDTO del usuario creado
-     * @throws DuplicateEntityException si el email ya existe
-     */
+
+    //metodo de escritura
     @Transactional
     public UserDTO registerUser(String email, String passwordHash, String firstName,
                                 String lastName, String phone) {
@@ -94,25 +90,13 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    /**
-     * Busca usuario por ID.
-     *
-     * @param userId ID del usuario
-     * @return UserDTO
-     * @throws EntityNotFoundException si no existe
-     */
+
     public UserDTO findById(Long userId) {
         User user = findUserEntityOrThrow(userId);
         return userMapper.toDTO(user);
     }
 
-    /**
-     * Busca usuario por email.
-     *
-     * @param email Email del usuario
-     * @return UserDTO
-     * @throws EntityNotFoundException si no existe
-     */
+    // los find de consulta no llevan @transactional
     public UserDTO findByEmail(String email) {
         User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new EntityNotFoundException("User with email: " + email));
@@ -120,25 +104,12 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    /**
-     * Lista todos los usuarios.
-     *
-     * @return Lista de UserDTO
-     */
+
     public List<UserDTO> findAllUsers() {
         return userMapper.toDTOList(userRepository.findAll());
     }
 
-    /**
-     * Actualiza perfil de usuario.
-     *
-     * @param userId ID del usuario
-     * @param firstName Nuevo nombre
-     * @param lastName Nuevo apellido
-     * @param phone Nuevo teléfono
-     * @return UserDTO actualizado
-     * @throws EntityNotFoundException si no existe
-     */
+
     public UserDTO updateProfile(Long userId, String firstName, String lastName, String phone) {
         User user = findUserEntityOrThrow(userId);
 
@@ -162,21 +133,15 @@ public class UserService {
             }
         }
 
-        // TODO Etapa 06: userRepository.save(user);
 
         return userMapper.toDTO(user);
     }
 
-    /**
-     * Elimina un usuario (soft delete cambiando estado).
-     *
-     * @param userId ID del usuario
-     * @throws EntityNotFoundException si no existe
-     */
+
     public void deleteUser(Long userId) {
         User user = findUserEntityOrThrow(userId);
         user.setStatus(UserStatus.INACTIVE);
-        // TODO Etapa 06: userRepository.save(user);
+
     }
 
 
@@ -193,3 +158,10 @@ public class UserService {
 
 
 }
+
+
+// metodos post put y delete, llevan el @transactional pero no son readonly (porque si hacen operaciones)
+
+//metodos post (create)
+//metodos update (put)
+//metodos delete (delete)
