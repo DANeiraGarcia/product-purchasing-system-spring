@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PpsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PpsApplication.class, args);
+
+    DotenDevelopmentLoader.load();
+    SpringApplication.run(PpsApplication.class,args) ;//requiere configuracion de variables de entorno
+                                                      //directorio sera subido 09 abril
     }
 }
