@@ -1,5 +1,6 @@
 package co.edu.cesde.pps;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,9 +8,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PpsApplication {
 
     public static void main(String[] args) {
+        Dotenv dotenv = Dotenv.configure()
+                .ignoreIfMissing()
+                .load();
 
-    DotenDevelopmentLoader.load();
-    SpringApplication.run(PpsApplication.class,args) ;//requiere configuracion de variables de entorno
-                                                      //directorio sera subido 09 abril
+        dotenv.entries().forEach(entry ->
+                System.setProperty(entry.getKey(), entry.getValue()));
+
+        SpringApplication.run(PpsApplication.class, args);
     }
 }
