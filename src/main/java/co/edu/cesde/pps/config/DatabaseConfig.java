@@ -1,6 +1,13 @@
 package co.edu.cesde.pps.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+/**
+ * @deprecated LEGADO - Ya no está en el flujo activo.
+ * Spring Boot autoconfigura el datasource desde application.yml
+ * usando las variables de entorno cargadas por DotenvDevelopmentLoader.
+ * Esta clase se conserva como referencia histórica.
+ */
+@Deprecated
 public class DatabaseConfig {
     private static final Logger log = LoggerFactory.getLogger(DatabaseConfig.class);
     private static final String DEFAULT_DB_HOST = "localhost";

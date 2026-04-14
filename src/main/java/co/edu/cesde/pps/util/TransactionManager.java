@@ -6,6 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+/**
+ * @deprecated LEGADO - Ya no está en el flujo activo.
+ * Spring Boot maneja las transacciones automáticamente
+ * con @Transactional de org.springframework.transaction.annotation.
+ * Esta clase se conserva como referencia histórica.
+ */
+@Deprecated
 public final class TransactionManager {
     private static final Logger log = LoggerFactory.getLogger(TransactionManager.class);
     private TransactionManager() {
