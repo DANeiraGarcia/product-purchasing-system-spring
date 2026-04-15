@@ -6,6 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
+/**
+ * @deprecated LEGADO - Ya no está en el flujo activo.
+ * Spring Boot autoconfigura el EntityManagerFactory automáticamente
+ * desde application.yml usando Spring Data JPA.
+ * Esta clase se conserva como referencia histórica.
+ */
+@Deprecated
 public final class JpaConfig {
     private static final Logger log = LoggerFactory.getLogger(JpaConfig.class);
     private static final String PERSISTENCE_UNIT_NAME = "pps-persistence-unit";
