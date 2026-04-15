@@ -1,0 +1,12 @@
+package co.edu.cesde.pps.web.dto.error;
+
+public enum ApiErrorCode {
+    VALIDATION_ERROR,
+    RESOURCE_NOT_FOUND,
+    DUPLICATE_RESOURCE,
+    INSUFFICIENT_STOCK,
+    INVALID_CART_STATE,
+    CART_MERGE_ERROR,
+    UNAUTHORIZED,
+    INTERNAL_SERVER_ERROR
+}
