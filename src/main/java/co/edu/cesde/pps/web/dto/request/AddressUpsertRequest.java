@@ -1,15 +1,17 @@
 package co.edu.cesde.pps.web.dto.request;
 
 import co.edu.cesde.pps.enums.AddressType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record AddressUpsertRequest(
-        AddressType type,
-        String line1,
+        @NotNull AddressType type,
+        @NotBlank String line1,
         String line2,
-        String city,
+        @NotBlank String city,
         String state,
-        String country,
-        String postalCode,
-        Boolean isDefault
+        @NotBlank String country,
+        @NotBlank String postalCode,
+        @NotNull Boolean isDefault
 ) {
 }
