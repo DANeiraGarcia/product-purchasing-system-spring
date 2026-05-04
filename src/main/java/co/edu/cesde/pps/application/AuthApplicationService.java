@@ -78,7 +78,7 @@ public class AuthApplicationService {
     public AuthSessionResponse login(LoginRequest request) {
         validateLoginRequest(request);
 
-        User user = userService.findUserEntityByEmailOrThrow(request.email());
+        User user = userService.findUserEntityOrThrow(request.email());
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw new AuthenticationException("User account is inactive");
         }
