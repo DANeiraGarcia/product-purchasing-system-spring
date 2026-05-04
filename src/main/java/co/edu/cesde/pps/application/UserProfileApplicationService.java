@@ -47,6 +47,6 @@ public class UserProfileApplicationService {
             throw new AuthenticationException("Current password is invalid");
         }
 
-        userService.updatePasswordHash(user.getUserId(), passwordHasher.hash(request.newPassword()));
+        //userService.updatePasswordHash(user.getUserId(), passwordHasher.hash(request.newPassword()));
     }
 }
