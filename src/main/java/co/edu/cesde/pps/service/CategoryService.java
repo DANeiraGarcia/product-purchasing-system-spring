@@ -50,6 +50,38 @@ public class CategoryService {
      * @return CategoryDTO de la categoría creada
      * @throws DuplicateEntityException si el slug ya existe
      */
+
+    @Transactional
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+        // Validaciones
+        ValidationUtils.validateNotBlank(categoryDTO.getName(), "name");
+
+        // Generar slug si no existe
+        String slug = categoryDTO.getSlug();
+        if (slug == null || slug.isBlank()) {
+            slug = StringUtils.slugify(categoryDTO.getName());
+        }
+
+        // Verificar slug único
+        if (existsBySlug(slug)) {
+            throw new DuplicateEntityException("Category", "slug", slug);
+        }
+
+        // Crear categoría
+        Category category = categoryMapper.toEntity(categoryDTO);
+        category.setSlug(slug);
+
+        // Asignar parent si existe
+        if (categoryDTO.getParentId() != null) {
+            Category parent = findCategoryEntityOrThrow(categoryDTO.getParentId());
+            category.setParent(parent);
+            parent.getSubcategories().add(category);
+        }
+
+        category = categoryRepository.save(category);
+
+        return categoryMapper.toDTO(category);
+    }
     @Transactional
     public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
         Category category = findCategoryEntityOrThrow(categoryId);
