@@ -9,6 +9,7 @@ public record CartItemResponse(
         Long productId,
         String sku,
         String name,
+        String image,
         Integer quantity,
         BigDecimal unitPrice,
         BigDecimal lineTotal,

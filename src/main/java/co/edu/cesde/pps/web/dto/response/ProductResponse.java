@@ -10,6 +10,7 @@ public record ProductResponse(
         String sku,
         String name,
         String description,
+        String image,
         BigDecimal price,
         Integer stockQty,
         Boolean isActive,
