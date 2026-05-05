@@ -47,6 +47,6 @@ public class OrderApplicationService {
 
     public OrderResponse getMyOrder(String sessionToken, Long orderId) {
         User user = userSessionService.requireAuthenticatedUser(sessionToken);
-        return webResponseMapper.toOrderResponse(orderService.findByIdForUser(user.getUserId(), orderId));
+        return webResponseMapper.toOrderResponse(orderService.findById(orderId));
     }
 }
