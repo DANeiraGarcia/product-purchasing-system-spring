@@ -153,6 +153,19 @@ public class UserService {
         return userRepository.existsByEmailIgnoreCase(email);
     }
 
+    /**
+     * Busca entity User por email o lanza excepción.
+     * Método interno para auth y otras capas de aplicación.
+     *
+     * @param email Email del usuario
+     * @return User entity
+     * @throws EntityNotFoundException si no existe
+     */
+    public User findUserEntityByEmailOrThrow(String email) {
+        return userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new EntityNotFoundException("User with email: " + email));
+    }
+
 
     // aca si devuelve el user (modelo) porque solo esta verificando errores
     public User findUserEntityOrThrow(Long userId) {
