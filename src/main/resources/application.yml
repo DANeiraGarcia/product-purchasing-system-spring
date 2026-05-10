@@ -24,3 +24,7 @@ logging:
     co.edu.cesde.pps: DEBUG
     org.hibernate.SQL: ${LOG_SQL_LEVEL:DEBUG}
     org.hibernate.orm.jdbc.bind: ${LOG_SQL_BIND_LEVEL:TRACE}
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}

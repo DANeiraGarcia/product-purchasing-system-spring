@@ -15,7 +15,7 @@ import java.util.List;
 import co.edu.cesde.pps.exception.EntityNotFoundException;
 
 @RestController
-@RequestMapping("/api/products") // mapeo de la dirección (comunicación con frontend)
+@RequestMapping("/api/v1/products") // mapeo de la dirección (comunicación con frontend)
 public class ProductController {
     private final ProductService productService;
 

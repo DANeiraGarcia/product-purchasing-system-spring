@@ -66,6 +66,9 @@ public class Product {
     @Column(name = "stock_qty", nullable = false)
     private Integer stockQty;
 
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     @Column(name = "is_active")
     @Builder.Default
     private Boolean isActive = true;
@@ -115,6 +118,7 @@ public class Product {
                 ", categoryId=" + (category != null ? category.getCategoryId() : null) +
                 ", sku='" + sku + '\'' +
                 ", name='" + name + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", price=" + price +
                 ", stockQty=" + stockQty +
                 ", isActive=" + isActive +
