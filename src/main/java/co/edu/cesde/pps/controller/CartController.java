@@ -16,7 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Cart", description = "Endpoints para gestión del carrito de compras")
+@Tag(name = "CartController", description = "Endpoints para gestión del carrito de compras")
 @RestController
 @RequestMapping(ApiRoutes.CART)
 public class CartController {

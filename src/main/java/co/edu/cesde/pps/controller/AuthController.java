@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Auth", description = "Endpoints de autenticación y gestión de sesiones")
+@Tag(name = "AuthController", description = "Endpoints de autenticación y gestión de sesiones")
 @RestController
 @RequestMapping(ApiRoutes.AUTH)
 public class AuthController {
