@@ -32,6 +32,7 @@ public class CartApplicationService {
         this.webResponseMapper = webResponseMapper;
     }
 
+    @Transactional
     public CartResponse getCurrentCart(String sessionToken) {
         return webResponseMapper.toCartResponse(resolveCurrentCart(sessionToken));
     }

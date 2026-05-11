@@ -35,22 +35,27 @@ public class OrderMapper {
         OrderDTO dto = new OrderDTO();
         dto.setOrderId(order.getOrderId());
         dto.setOrderNumber(order.getOrderNumber());
+
         if (order.getUser() != null) {
             dto.setUserId(order.getUser().getUserId());
+            dto.setUserEmail(order.getUser().getEmail());
+            dto.setUserFullName(order.getUser().getFullName());
         }
 
-        // TODO: En etapa 06 con JPA, cargar user para obtener email y fullName
-        // Por ahora solo tenemos userId
+        if (order.getOrderStatus() != null) {
+            dto.setOrderStatusName(order.getOrderStatus().getName());
+        }
 
-        // TODO: En etapa 06 con JPA, cargar orderStatus para obtener nombre
-        // Por ahora solo tenemos orderStatusId
+        if (order.getShippingAddress() != null) {
+            dto.setShippingAddress(null);
+        }
 
-        // TODO: En etapa 06 con JPA, cargar addresses completas
-        // Por ahora solo tenemos addressIds
+        if (order.getBillingAddress() != null) {
+            dto.setBillingAddress(null);
+        }
 
         dto.setCreatedAt(order.getCreatedAt());
 
-        // Convertir items
         if (order.getItems() != null) {
             List<OrderItemDTO> itemDTOs = order.getItems().stream()
                     .map(this::toOrderItemDTO)
@@ -61,13 +66,11 @@ public class OrderMapper {
             dto.setItemsCount(0);
         }
 
-        // Valores monetarios
         dto.setSubtotal(order.getSubtotal());
         dto.setTax(order.getTax());
         dto.setShippingCost(order.getShippingCost());
         dto.setTotal(order.getTotal());
 
-        // Formatear valores monetarios
         if (dto.getSubtotal() != null) {
             dto.setSubtotalFormatted(MoneyUtils.formatUSD(dto.getSubtotal()));
         }
@@ -102,18 +105,17 @@ public class OrderMapper {
             dto.setOrderId(item.getOrder().getOrderId());
         }
 
-        // Extraer datos de Product (relación)
         if (item.getProduct() != null) {
             dto.setProductId(item.getProduct().getProductId());
             dto.setProductName(item.getProduct().getName());
             dto.setProductSku(item.getProduct().getSku());
+            dto.setProductImageUrl(item.getProduct().getImageUrl());
         }
 
         dto.setQuantity(item.getQuantity());
-        dto.setUnitPrice(item.getUnitPrice()); // Precio histórico
+        dto.setUnitPrice(item.getUnitPrice());
         dto.setLineTotal(item.getLineTotal());
 
-        // Formatear valores
         if (dto.getUnitPrice() != null) {
             dto.setUnitPriceFormatted(MoneyUtils.formatUSD(dto.getUnitPrice()));
         }
