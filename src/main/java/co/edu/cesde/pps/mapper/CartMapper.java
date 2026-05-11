@@ -91,6 +91,7 @@ public class CartMapper {
             dto.setProductSku(item.getProduct().getSku());
             dto.setProductAvailable(item.getProduct().isAvailable());
             dto.setProductStock(item.getProduct().getStockQty());
+            dto.setProductImageUrl(item.getProduct().getImageUrl());
         }
 
         dto.setQuantity(item.getQuantity());
