@@ -19,6 +19,8 @@ import co.edu.cesde.pps.web.dto.response.UserResponse;
 import co.edu.cesde.pps.web.mapper.WebResponseMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import co.edu.cesde.pps.exception.EntityNotFoundException;
+import co.edu.cesde.pps.exception.InvalidCartStateException;
 
 /**
  * Capa de aplicación para auth/sesión previa a la exposición HTTP real.
@@ -105,7 +107,11 @@ public class AuthApplicationService {
 
     private CartDTO resolveAuthenticatedCart(Long userId, Long guestCartId) {
         if (guestCartId != null) {
-            return cartService.mergeGuestCartToUserCart(guestCartId, userId);
+            try {
+                return cartService.mergeGuestCartToUserCart(guestCartId, userId);
+            } catch (EntityNotFoundException | InvalidCartStateException e) {
+                // Carrito guest no existe o ya fue usado, ignorar
+            }
         }
         return cartService.findOrCreateOpenCartForUser(userId);
     }
