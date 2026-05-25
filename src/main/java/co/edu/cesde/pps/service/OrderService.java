@@ -8,8 +8,7 @@ import co.edu.cesde.pps.exception.InvalidCartStateException;
 import co.edu.cesde.pps.exception.ValidationException;
 import co.edu.cesde.pps.mapper.OrderMapper;
 import co.edu.cesde.pps.model.*;
-import co.edu.cesde.pps.repository.OrderRepository;
-import co.edu.cesde.pps.repository.OrderStatusRepository;
+import co.edu.cesde.pps.repository.*;
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.config.AppConfig;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,11 +52,16 @@ public class OrderService {
     private final ProductService productService;
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
+    private final PaymentRepository paymentRepository;
+    private final PaymentStatusRepository paymentStatusRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
     private final Random random;
 
     public OrderService(UserService userService, CartService cartService,
                         AddressService addressService, ProductService productService,
-                        OrderRepository orderRepository, OrderStatusRepository orderStatusRepository) {
+                        OrderRepository orderRepository, OrderStatusRepository orderStatusRepository,
+                        PaymentRepository paymentRepository, PaymentStatusRepository paymentStatusRepository,
+                        PaymentMethodRepository paymentMethodRepository) {
         this.orderMapper = new OrderMapper();
         this.userService = userService;
         this.cartService = cartService;
@@ -65,6 +69,9 @@ public class OrderService {
         this.productService = productService;
         this.orderRepository = orderRepository;
         this.orderStatusRepository = orderStatusRepository;
+        this.paymentRepository = paymentRepository;
+        this.paymentStatusRepository = paymentStatusRepository;
+        this.paymentMethodRepository = paymentMethodRepository;
         this.random = new Random();
     }
 
@@ -96,7 +103,7 @@ public class OrderService {
      */
     @Transactional
     public OrderDTO checkout(Long userId, Long cartId, Long shippingAddressId,
-                             Long billingAddressId) {
+                             Long billingAddressId,String paymentMethodName) {
         User user = userService.findUserEntityOrThrow(userId);
         Cart cart = cartService.findCartEntityOrThrow(cartId);
 
@@ -195,6 +202,24 @@ public class OrderService {
         cart.setUpdatedAt(LocalDateTime.now());
 
         order = orderRepository.save(order);
+
+
+        PaymentMethod paymentMethod = paymentMethodRepository.findByNameIgnoreCase(paymentMethodName)
+                .orElseThrow(() -> new EntityNotFoundException("PaymentMethod", paymentMethodName));
+
+        PaymentStatus completedStatus = paymentStatusRepository.findByNameIgnoreCase("COMPLETED")
+                .orElseThrow(() -> new EntityNotFoundException("PaymentStatus", "COMPLETED"));
+
+        Payment payment = Payment.builder()
+                .order(order)
+                .paymentMethod(paymentMethod)
+                .paymentStatus(completedStatus)
+                .amount(order.getTotal())
+                .currency(co.edu.cesde.pps.enums.Currency.COP)
+                .paidAt(LocalDateTime.now())
+                .build();
+
+        paymentRepository.save(payment);
 
         return orderMapper.toDTO(order);
     }

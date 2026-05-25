@@ -36,7 +36,8 @@ public class OrderApplicationService {
                 user.getUserId(),
                 request.cartId(),
                 request.shippingAddressId(),
-                request.billingAddressId()
+                request.billingAddressId(),
+                request.paymentMethod()
         ));
     }
 
