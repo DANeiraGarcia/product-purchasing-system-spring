@@ -63,6 +63,9 @@ public class Product {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "rating")  // ← agregar
+    private Double rating;
+
     @Column(name = "stock_qty", nullable = false)
     private Integer stockQty;
 
@@ -109,6 +112,8 @@ public class Product {
         return Objects.hash(productId);
     }
 
+
+
     // toString personalizado sin navegación a objetos relacionados (solo IDs)
 
     @Override
@@ -120,6 +125,7 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", price=" + price +
+                ", rating=" + rating +
                 ", stockQty=" + stockQty +
                 ", isActive=" + isActive +
                 ", isAvailable=" + isAvailable() +

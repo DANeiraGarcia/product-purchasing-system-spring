@@ -60,6 +60,11 @@ public class ProductService {
      */
     @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
+        if (productDTO.getSku() == null || productDTO.getSku().isBlank()) {
+            productDTO.setSku("PROD-" + System.currentTimeMillis());
+        }
+
+        ValidationUtils.validateNotBlank(productDTO.getSku(), "sku");
         ValidationUtils.validateNotBlank(productDTO.getSku(), "sku");
         ValidationUtils.validateNotBlank(productDTO.getName(), "name");
         ValidationUtils.validateNonNegative(productDTO.getPrice(), "price");
@@ -122,7 +127,7 @@ public class ProductService {
     public void deleteProduct(Long productId) {
         Product product = findProductEntityOrThrow(productId);
         product.setIsActive(false);
-        // TODO Etapa 06: productRepository.save(product);
+        productRepository.save(product);
     }
 
 
@@ -145,7 +150,7 @@ public class ProductService {
      * @return Lista de ProductDTO
      */
     public List<ProductDTO> findAllProducts() {
-        return productMapper.toDTOList(productRepository.findAll());
+        return productMapper.toDTOList(productRepository.findByIsActiveTrue());
     }
 
 
