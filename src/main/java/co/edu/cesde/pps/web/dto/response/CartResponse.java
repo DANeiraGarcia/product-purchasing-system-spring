@@ -3,7 +3,7 @@ package co.edu.cesde.pps.web.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record CartResponse(
+public record CartResponse  (
         Long id,
         Long userId,
         String userEmail,
@@ -14,4 +14,5 @@ public record CartResponse(
         List<CartItemResponse> items,
         CartSummaryResponse summary
 ) {
+
 }

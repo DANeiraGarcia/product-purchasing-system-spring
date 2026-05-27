@@ -105,6 +105,8 @@ public class ProductService {
         product.setPrice(productDTO.getPrice());
         product.setStockQty(productDTO.getStockQty());
         product.setIsActive(productDTO.getIsActive());
+        product.setImageUrl(productDTO.getImage());
+        product.setRating(productDTO.getRating());
 
         if (productDTO.getCategoryId() != null &&
                 !productDTO.getCategoryId().equals(product.getCategory().getCategoryId())) {
