@@ -124,8 +124,6 @@ public class ProductService {
 
 
 
-
-
     public void deleteProduct(Long productId) {
         Product product = findProductEntityOrThrow(productId);
         product.setIsActive(false);
